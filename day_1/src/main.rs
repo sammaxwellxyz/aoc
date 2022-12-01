@@ -1,31 +1,26 @@
 fn day_1_a(input: &str) -> u32 {
     input.split("\n\n")
-        .enumerate()
-        .fold((0, 0), |mut acc, elf| {
-            let elfs_cal = elf.1.split("\n")
+        .map(|elf| {
+            elf.split("\n")
                 .filter(|cal| cal != &"")
                 .map(|cal| cal.parse::<u32>().unwrap())
-                .sum::<u32>();
-            if elfs_cal > acc.1 {
-                acc.0 = elf.0 as usize;
-                acc.1 = elfs_cal;
-            }
-            return acc;
-        }).1
+                .sum::<u32>()
+        })
+        .max()
+        .unwrap()
 }
 
 fn day_1_b(input: &str) -> u32 {
     let mut sorted_elfs = input.split("\n\n")
-        .enumerate()
         .map(|elf| {
-            let elfs_cal = elf.1.split("\n")
+            elf.split("\n")
                 .filter(|cal| cal != &"")
                 .map(|cal| cal.parse::<u32>().unwrap())
-                .sum::<u32>();
-            return (elf.0, elfs_cal);
-        }).collect::<Vec<(usize, u32)>>();
-    sorted_elfs.sort_by_key(|elf| elf.1);
-    sorted_elfs.iter().rev().take(3).map(|elf| elf.1).take(3).sum()
+                .sum::<u32>()
+        })
+        .collect::<Vec<u32>>();
+    sorted_elfs.sort();
+    sorted_elfs.iter().rev().take(3).sum()
 }
 
 fn main() {
