@@ -1,42 +1,45 @@
+use std::cmp::Ordering;
+
+#[derive(PartialEq)]
+enum Hand {
+    Rock,
+    Paper,
+    Scissors
+}
+
+trait Cyclable {
+    fn next(&self) -> Self;
+    fn previous(&self) -> Self;
+}
+
+impl Cyclable for Hand {
+    fn next(&self) -> Self {
+        match &self {
+            Hand::Rock => Hand::Paper,
+            Hand::Paper => Hand::Scissors,
+            Hand::Scissors => Hand::Rock,
+        }
+    }
+    fn previous(&self) -> Self {
+        match &self {
+            Hand::Rock => Hand::Scissors,
+            Hand::Paper => Hand::Rock,
+            Hand::Scissors => Hand::Paper,
+        }
+    }
+}
+trait Score {
+    fn score(&self) -> u32;
+}
+
+impl Score for Hand {
+    fn score(&self) -> u32 {
+        (*self as u32) + 1
+    }
+}
+
 mod a {
-    use std::cmp::Ordering;
-
-    #[derive(PartialEq)]
-    enum Hand {
-        Rock,
-        Paper,
-        Scissors
-    }
-
-    impl PartialOrd for Hand {
-        fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        match (self, other) {
-            (Hand::Rock, Hand::Rock) => Some(Ordering::Equal),
-            (Hand::Rock, Hand::Paper) => Some(Ordering::Less),
-            (Hand::Rock, Hand::Scissors) => Some(Ordering::Greater),
-            (Hand::Paper, Hand::Rock) => Some(Ordering::Greater),
-            (Hand::Paper, Hand::Paper) => Some(Ordering::Equal),
-            (Hand::Paper, Hand::Scissors) => Some(Ordering::Less),
-            (Hand::Scissors, Hand::Rock) => Some(Ordering::Less),
-            (Hand::Scissors, Hand::Paper) => Some(Ordering::Greater),
-            (Hand::Scissors, Hand::Scissors) => Some(Ordering::Equal)
-        }
-    }
-    }
-
-    trait Score {
-        fn score(&self) -> u32;
-    }
-
-    impl Score for Hand {
-        fn score(&self) -> u32 {
-            match self {
-                Hand::Rock => 1,
-                Hand::Paper => 2,
-                Hand::Scissors => 3
-            }
-        }
-    }
+    use super::*;
 
     impl From<&str> for Hand {
         fn from(code: &str) -> Self {
@@ -55,10 +58,12 @@ mod a {
             .map(|hands| {
                 let opposition = &hands[0];
                 let me = &hands[1];
-                match opposition.partial_cmp(&me).unwrap() {
-                    Ordering::Less => me.score() + 6,
-                    Ordering::Equal => me.score() + 3,
-                    Ordering::Greater => me.score() + 0,
+                if me == &opposition.next() {
+                    return  me.score() + 6
+                } else if me == &opposition.previous() {
+                    me.score() + 0
+                } else {
+                    me.score() + 3
                 }
             })
             .sum()
@@ -66,46 +71,8 @@ mod a {
 }
 
 mod b {
-    use std::cmp::Ordering;
 
-    #[derive(PartialEq)]
-    enum Hand {
-        Rock,
-        Paper,
-        Scissors
-    }
-
-    trait Battle {
-        fn beats(&self) -> Self;
-        fn loses_to(&self) -> Self;
-    }
-
-    impl Battle for Hand {
-        fn beats(&self) -> Self {
-            match &self {
-                Hand::Rock => Hand::Scissors,
-                Hand::Paper => Hand::Rock,
-                Hand::Scissors => Hand::Paper,
-            }
-        }
-        fn loses_to(&self) -> Self {
-            match &self {
-                Hand::Rock => Hand::Paper,
-                Hand::Paper => Hand::Scissors,
-                Hand::Scissors => Hand::Rock,
-            }
-        }
-    }
-    trait Score {
-        fn score(&self) -> u32;
-    }
-
-    impl Score for Hand {
-        fn score(&self) -> u32 {
-            (*self as u32) + 1
-        }
-    }
-    
+    use super::*;
 
     fn code_to_hand(code: &str) -> Hand {
         match code {
@@ -131,8 +98,8 @@ mod b {
             .map(|codes| (code_to_hand(codes[0]), code_to_outcome(codes[1])))
             .map(|(opposition, outcome)| {
                 match (opposition, outcome) {
-                    (op, Ordering::Less) => op.beats().score() + 0,
-                    (op, Ordering::Greater) => op.loses_to().score() + 6,
+                    (op, Ordering::Less) => op.previous().score() + 0,
+                    (op, Ordering::Greater) => op.next().score() + 6,
                     (op, Ordering::Equal) => op.score() + 3,
                 }
             })
