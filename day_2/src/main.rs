@@ -102,13 +102,10 @@ mod b {
 
     impl Score for Hand {
         fn score(&self) -> u32 {
-            match self {
-                Hand::Rock => 1,
-                Hand::Paper => 2,
-                Hand::Scissors => 3
-            }
+            (*self as u32) + 1
         }
     }
+    
 
     fn code_to_hand(code: &str) -> Hand {
         match code {
