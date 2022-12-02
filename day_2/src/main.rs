@@ -97,10 +97,10 @@ mod b {
             .map(|round| round.split(" ").collect::<Vec<&str>>())
             .map(|codes| (code_to_hand(codes[0]), code_to_outcome(codes[1])))
             .map(|(opposition, outcome)| {
-                match (opposition, outcome) {
-                    (op, Ordering::Less) => op.previous().score() + 0,
-                    (op, Ordering::Greater) => op.next().score() + 6,
-                    (op, Ordering::Equal) => op.score() + 3,
+                match outcome {
+                    Ordering::Less => opposition.previous().score() + 0,
+                    Ordering::Greater => opposition.next().score() + 6,
+                    Ordering::Equal => opposition.score() + 3,
                 }
             })
             .sum()
