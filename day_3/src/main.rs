@@ -61,7 +61,6 @@ mod tests {
     fn test() {
         let input = fs::read_to_string("test.txt").expect("input file no worky");
         assert_eq!(a::run(&input), 157);
-        print!("bea");
         assert_eq!(b::run(&input), 70);
     }
 
