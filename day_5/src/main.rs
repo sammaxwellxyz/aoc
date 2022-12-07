@@ -3,23 +3,25 @@ use std::fs;
 fn build_stacks(stack: &str) -> Vec<Vec<char>> {
     stack
         .split("\n")
+        .filter(|line| line.contains("["))
         .fold(Vec::new(), |mut acc, level| {
-            if level.contains(" 1 ") {
-                return acc;
-            }
-            level.chars().collect::<Vec<char>>().chunks(4).enumerate().for_each(|(stack_idx, stack_box)| {
-                if acc.len() <= stack_idx {
-                    if stack_box.contains(&'[') {
-                        acc.push(vec![stack_box[1]]);
+            level.chars()
+                .collect::<Vec<char>>()
+                .chunks(4)
+                .enumerate()
+                .for_each(|(stack_idx, stack_box)| {
+                    if acc.len() <= stack_idx {
+                        if stack_box.contains(&'[') {
+                            acc.push(vec![stack_box[1]]);
+                        } else {
+                            acc.push(vec![]);
+                        }
                     } else {
-                        acc.push(vec![]);
+                        if stack_box.contains(&'[') {
+                            acc[stack_idx].insert(0, stack_box[1]);
+                        }
                     }
-                } else {
-                    if stack_box.contains(&'[') {
-                        acc[stack_idx].insert(0, stack_box[1]);
-                    }
-                }
-            });
+                });
             acc
         })
 }
