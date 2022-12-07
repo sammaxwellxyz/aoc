@@ -32,6 +32,27 @@ fn line_parse(input: &str) -> Line {
     }
 }
 
+fn build_tree(input: &str) -> Tree {
+    input.split("\n").skip(1).fold(Tree::new(), |mut acc, line| {
+        match line_parse(line) {
+            Line::Change("..") => {
+                acc.change_to_parent();
+            }
+            Line::Change(child) => {
+                acc.change_to_child(child);
+            }
+            Line::Dir(k) => {
+                acc.add_directory(k);
+            },
+            Line::File(size, _) => {
+                acc.increase_size(size);
+            }
+            _ => {}
+        }
+        acc
+    })
+}
+
 impl <'a> Tree<'a> {
     fn new() -> Self {
         Self { nodes: vec!(Directory { parent: None, children: HashSet::new(), size: 0, name: "/" }), current_directory: Some(0) }
@@ -78,24 +99,7 @@ mod a {
     use super::*;
 
     pub fn run(input: &str) -> u32 {
-        let dir_tree = input.split("\n").skip(1).fold(Tree::new(), |mut acc, line| {
-            match line_parse(line) {
-                Line::Change(target) => {
-                    match target {
-                        ".." => { acc.change_to_parent() },
-                        m => { acc.change_to_child(m) }
-                    }
-                }
-                Line::Dir(k) => {
-                    acc.add_directory(k);
-                },
-                Line::File(size, _) => {
-                    acc.increase_size(size);
-                }
-                _ => {}
-            }
-            acc
-        });
+        let dir_tree = build_tree(input);
         dir_tree.nodes.iter().enumerate().filter_map::<u32, _>(|(idx, _)| {
             let size = dir_tree.get_total_size(idx);
             if size <= 100000 {
@@ -103,7 +107,6 @@ mod a {
             }
             None
         }).sum::<u32>()
-
     }
 }
 
@@ -111,24 +114,7 @@ mod b {
     use super::*;
 
     pub fn run(input: &str) -> u32 {
-        let dir_tree = input.split("\n").skip(1).fold(Tree::new(), |mut acc, line| {
-            match line_parse(line) {
-                Line::Change(target) => {
-                    match target {
-                        ".." => { acc.change_to_parent() },
-                        m => { acc.change_to_child(m) }
-                    }
-                }
-                Line::Dir(k) => {
-                    acc.add_directory(k);
-                },
-                Line::File(size, _) => {
-                    acc.increase_size(size);
-                }
-                _ => {}
-            }
-            acc
-        });
+        let dir_tree = build_tree(input);
         let total_size = dir_tree.get_total_size(0);
         let required_space = total_size - 40000000;
 
