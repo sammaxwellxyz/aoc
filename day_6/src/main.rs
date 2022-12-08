@@ -1,12 +1,14 @@
+use std::collections::HashSet;
 use std::fs;
-use std::{collections::HashSet};
 
 pub fn gen_run(input: &str, size: usize) -> usize {
-    input.bytes().collect::<Vec<u8>>()
+    input
+        .bytes()
+        .collect::<Vec<u8>>()
         .windows(size)
-        .position(|window| {
-            HashSet::<u8>::from_iter(window.iter().cloned()).len() == size
-        }).unwrap() + size
+        .position(|window| HashSet::<u8>::from_iter(window.iter().cloned()).len() == size)
+        .unwrap()
+        + size
 }
 
 mod a {
@@ -25,13 +27,13 @@ mod b {
     }
 }
 
-
 fn main() {
-    let input = fs::read_to_string("input.txt").expect("input file no worky").clone();
+    let input = fs::read_to_string("input.txt")
+        .expect("input file no worky")
+        .clone();
     println!("a: {}", a::run(&input));
     println!("b: {}", b::run(&input));
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -61,7 +63,7 @@ mod tests {
         )*
         }
     }
-    
+
     eq_a_tests! {
         eq_a_0: ("bvwbjplbgvbhsrlpgdmjqwftvncz", 5)
         eq_a_1: ("nppdvjthqldpwncqszvftbrmjlhg", 6)
