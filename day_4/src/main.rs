@@ -1,51 +1,61 @@
+use std::collections::HashSet;
 use std::fs;
 
+fn parse_range(range: &str) -> HashSet<u32> {
+    let [a_0, a_1]: [u32; 2] = range
+        .split("-")
+        .map(|p| p.parse::<u32>().unwrap())
+        .collect::<Vec<u32>>()
+        .try_into()
+        .unwrap();
+    return HashSet::from_iter(a_0..(a_1 + 1));
+}
+
 mod a {
-    use std::collections::HashSet;
+    use super::*;
 
     pub fn run(input: &str) -> usize {
-        input.split("\n")
+        input
+            .split("\n")
             .filter(|line| {
-                let mut parts = line.split(",");
-                let mut a_range = parts.next().unwrap().split("-");
-                let elf_1: HashSet<i32> = HashSet::from_iter((a_range.next().unwrap().parse::<i32>().unwrap())..(a_range.next().unwrap().parse::<i32>().unwrap() + 1));
-                let mut b_range = parts.next().unwrap().split("-");
-                let elf_2: HashSet<i32> = HashSet::from_iter((b_range.next().unwrap().parse::<i32>().unwrap())..(b_range.next().unwrap().parse::<i32>().unwrap() + 1));
-                return elf_1.is_subset(&elf_2) || elf_2.is_subset(&elf_1)
+                let parts = line.split(",").collect::<Vec<&str>>();
+                let elf_1 = parse_range(parts[0]);
+                let elf_2 = parse_range(parts[1]);
+
+                return elf_1.is_subset(&elf_2) || elf_2.is_subset(&elf_1);
             })
             .count()
     }
 }
 
 mod b {
-    use std::collections::HashSet;
+    use super::*;
 
     pub fn run(input: &str) -> usize {
-        input.split("\n")
+        input
+            .split("\n")
             .filter(|line| {
-                let mut parts = line.split(",");
-                let mut a_range = parts.next().unwrap().split("-");
-                let elf_1: HashSet<i32> = HashSet::from_iter((a_range.next().unwrap().parse::<i32>().unwrap())..(a_range.next().unwrap().parse::<i32>().unwrap() + 1));
-                let mut b_range = parts.next().unwrap().split("-");
-                let elf_2: HashSet<i32> = HashSet::from_iter((b_range.next().unwrap().parse::<i32>().unwrap())..(b_range.next().unwrap().parse::<i32>().unwrap() + 1));
-                return elf_1.intersection(&elf_2).count() > 0
-
+                let parts = line.split(",").collect::<Vec<&str>>();
+                let elf_1 = parse_range(parts[0]);
+                let elf_2 = parse_range(parts[1]);
+                return elf_1.intersection(&elf_2).count() > 0;
             })
             .count()
     }
 }
 
 fn main() {
-    let input = fs::read_to_string("input.txt").expect("input file no worky").clone();
+    let input = fs::read_to_string("input.txt")
+        .expect("input file no worky")
+        .clone();
     println!("a: {}", a::run(&input));
     println!("b: {}", b::run(&input));
 }
 
-
 #[cfg(test)]
 mod tests {
 
-    use super::{a,b};
+    use super::{a, b};
     use std::fs;
 
     #[test]
@@ -54,5 +64,4 @@ mod tests {
         assert_eq!(a::run(&input), 2);
         assert_eq!(b::run(&input), 4);
     }
-
 }
