@@ -4,7 +4,7 @@ use std::cmp::Ordering;
 enum Hand {
     Rock,
     Paper,
-    Scissors
+    Scissors,
 }
 
 trait Cyclable {
@@ -47,19 +47,25 @@ mod a {
                 "A" | "X" => Hand::Rock,
                 "B" | "Y" => Hand::Paper,
                 "C" | "Z" => Hand::Scissors,
-                _ => panic!("unrecognised hand symbol")
+                _ => panic!("unrecognised hand symbol"),
             }
         }
     }
 
     pub fn run(input: &str) -> u32 {
-        input.split("\n")
-            .map(|round| round.split(" ").map(|code| code.into()).collect::<Vec<Hand>>())
+        input
+            .split("\n")
+            .map(|round| {
+                round
+                    .split(" ")
+                    .map(|code| code.into())
+                    .collect::<Vec<Hand>>()
+            })
             .map(|hands| {
                 let opposition = &hands[0];
                 let me = &hands[1];
                 if me == &opposition.next() {
-                    return  me.score() + 6
+                    return me.score() + 6;
                 } else if me == &opposition.previous() {
                     me.score() + 0
                 } else {
@@ -79,7 +85,7 @@ mod b {
             "A" => Hand::Rock,
             "B" => Hand::Paper,
             "C" => Hand::Scissors,
-            _ => panic!("unrecognised hand symbol")
+            _ => panic!("unrecognised hand symbol"),
         }
     }
 
@@ -88,20 +94,19 @@ mod b {
             "X" => Ordering::Less,
             "Y" => Ordering::Equal,
             "Z" => Ordering::Greater,
-            _ => panic!("unrecognised hand symbol")
+            _ => panic!("unrecognised hand symbol"),
         }
     }
 
     pub fn run(input: &str) -> u32 {
-        input.split("\n")
+        input
+            .split("\n")
             .map(|round| round.split(" ").collect::<Vec<&str>>())
             .map(|codes| (code_to_hand(codes[0]), code_to_outcome(codes[1])))
-            .map(|(opposition, outcome)| {
-                match outcome {
-                    Ordering::Less => opposition.previous().score() + 0,
-                    Ordering::Greater => opposition.next().score() + 6,
-                    Ordering::Equal => opposition.score() + 3,
-                }
+            .map(|(opposition, outcome)| match outcome {
+                Ordering::Less => opposition.previous().score() + 0,
+                Ordering::Greater => opposition.next().score() + 6,
+                Ordering::Equal => opposition.score() + 3,
             })
             .sum()
     }
@@ -115,13 +120,11 @@ fn main() {
     println!("b: {}", b::run(&input));
 }
 
-
 #[cfg(test)]
 mod tests {
 
-    use super::{a,b};
+    use super::{a, b};
     use std::fs;
-
 
     #[test]
     fn test() {
@@ -129,5 +132,4 @@ mod tests {
         assert_eq!(a::run(&input), 15);
         assert_eq!(b::run(&input), 12);
     }
-
 }

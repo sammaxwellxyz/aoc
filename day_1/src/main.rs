@@ -1,7 +1,8 @@
 use std::fs;
 
 fn day_1_a(input: &str) -> u32 {
-    input.split("\n\n")
+    input
+        .split("\n\n")
         .map(|elf| {
             elf.split("\n")
                 .filter(|cal| cal != &"")
@@ -13,7 +14,8 @@ fn day_1_a(input: &str) -> u32 {
 }
 
 fn day_1_b(input: &str) -> u32 {
-    let mut sorted_elfs = input.split("\n\n")
+    let mut sorted_elfs = input
+        .split("\n\n")
         .map(|elf| {
             elf.split("\n")
                 .filter(|cal| cal != &"")
@@ -30,7 +32,6 @@ fn main() {
     println!("a: {}", day_1_a(&input));
     println!("b: {}", day_1_b(&input));
 }
-
 
 #[cfg(test)]
 mod tests {
