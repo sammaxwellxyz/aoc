@@ -1,27 +1,30 @@
 use std::fs;
+use std::{collections::HashSet};
+
+pub fn gen_run(input: &str, size: usize) -> usize {
+    input.bytes().collect::<Vec<u8>>()
+        .windows(size)
+        .position(|window| {
+            HashSet::<u8>::from_iter(window.iter().cloned()).len() == size
+        }).unwrap() + size
+}
 
 mod a {
-    use std::{collections::HashSet};
+    use super::*;
+
     pub fn run(input: &str) -> usize {
-        input.bytes().collect::<Vec<u8>>()
-            .windows(4)
-            .position(|window| {
-                HashSet::<u8>::from_iter(window.iter().cloned()).len() == 4
-            }).unwrap() + 4
+        gen_run(input, 4)
     }
 }
 
 mod b {
-    use std::{collections::HashSet};
+    use super::*;
+
     pub fn run(input: &str) -> usize {
-        input.bytes().collect::<Vec<u8>>()
-            .windows(14)
-            .position(|window| {
-                println!("{:?}", window);
-                HashSet::<u8>::from_iter(window.iter().cloned()).len() == 14
-            }).unwrap() + 14
+        gen_run(input, 14)
     }
 }
+
 
 fn main() {
     let input = fs::read_to_string("input.txt").expect("input file no worky").clone();
